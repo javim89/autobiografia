@@ -68,7 +68,8 @@ export const HOBBIES = [
 export const FRASES = [
   {
     id: 1,
-    text: 'Más vale pedir perdón que permiso.',
+    text: "Don't quit",
+    easter: true,
     author: 'Azu, siempre',
     locked: false,
   },

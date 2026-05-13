@@ -4,6 +4,31 @@ import { useScrollReveal } from '../hooks/useScrollReveal'
 import { useToast } from './Toast'
 import { launchConfetti } from './Confetti'
 
+function EasterFrase({ text }) {
+  // "Don't quit" → ["Do", "n't qu", "it"]
+  const [hidden, setHidden] = useState(false)
+  const timerRef = useRef(null)
+
+  const handleEnter = () => {
+    timerRef.current = setTimeout(() => setHidden(true), 1000)
+  }
+
+  const handleLeave = () => {
+    clearTimeout(timerRef.current)
+    setHidden(false)
+  }
+
+  return (
+    <p
+      className="frase-text"
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
+    >
+      "Do<span className={`frase-easter-hidden${hidden ? ' gone' : ''}`}>n't</span>{' '}<span className={`frase-easter-hidden${hidden ? ' gone' : ''}`}>qu</span>it"
+    </p>
+  )
+}
+
 function FraseItem({ frase, isLast }) {
   const { ref, visible } = useScrollReveal()
   const [revealed, setRevealed] = useState(false)
@@ -45,7 +70,7 @@ function FraseItem({ frase, isLast }) {
           {revealed ? '🔓 Desbloqueada' : '🔒 +18 — Click para revelar'}
         </span>
       )}
-      <p className="frase-text">"{frase.text}"</p>
+      {frase.easter ? <EasterFrase text={frase.text} /> : <p className="frase-text">"{frase.text}"</p>}
       <p className="frase-author">— {frase.author}</p>
     </div>
   )

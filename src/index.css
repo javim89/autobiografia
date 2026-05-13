@@ -589,6 +589,22 @@ a {
   border-color: var(--accent);
 }
 
+.frase-easter-hidden {
+  display: inline-block;
+  opacity: 1;
+  max-width: 6ch;
+  overflow: hidden;
+  vertical-align: bottom;
+  transition: opacity 0.5s ease, max-width 0.5s ease, letter-spacing 0.5s ease;
+  letter-spacing: normal;
+}
+
+.frase-easter-hidden.gone {
+  opacity: 0;
+  max-width: 0;
+  letter-spacing: -1em;
+}
+
 .frase-text {
   font-family: var(--font-serif);
   font-style: italic;
