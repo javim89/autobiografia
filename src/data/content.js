@@ -9,21 +9,25 @@ export const TIMELINE = [
     year: '2007',
     title: 'El comienzo',
     desc: 'Inicié como youtuber. Sí, esa etapa.',
+    media: ['/media/2007-mambru.jpg'],
   },
   {
     year: '2016',
     title: 'Facu terminada',
     desc: 'Después de años de cursada, logré el título. Primer gran hito adulto.',
+    media: ['/media/2016-facu.jpg'],
   },
   {
     year: '2018',
     title: 'Monat',
     desc: 'Entré al mundo de Monat — ventas, liderazgo y mucho aprendizaje.',
+    media: ['/media/2018-monat.jpg'],
   },
   {
     year: '2022',
     title: 'Inglaterra',
     desc: 'Me fui a Inglaterra. Nueva lengua, nueva cultura, nueva versión.',
+    media: ['/media/2022-inglaterra.jpg'],
   },
 ]
 
