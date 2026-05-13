@@ -1,6 +1,7 @@
 import { useRef, useState, useCallback, useEffect } from 'react'
 import { TIMELINE } from '../data/content'
 import { useScrollReveal } from '../hooks/useScrollReveal'
+import ImageCompareSlider from './ImageCompareSlider'
 
 function ImageCarousel({ images }) {
   const [current, setCurrent] = useState(0)
@@ -93,7 +94,14 @@ function TimelineCard({ item, side }) {
                   playsInline
                 />
               )}
-              {isCarousel ? (
+              {item.compareImage ? (
+                <ImageCompareSlider
+                  before={item.compareImage}
+                  after={item.media[0]}
+                  labelBefore="En cursada"
+                  labelAfter="Graduado"
+                />
+              ) : isCarousel ? (
                 <ImageCarousel images={item.media} />
               ) : (
                 item.media.map((src, i) => {

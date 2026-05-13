@@ -768,3 +768,112 @@ a {
     display: none;
   }
 }
+
+/* ── Image Compare Slider ─────────────────────────────── */
+.img-compare {
+  position: relative;
+  width: 100%;
+  height: 340px;
+  overflow: hidden;
+  border-radius: 12px;
+  cursor: col-resize;
+  user-select: none;
+  container-type: inline-size;
+}
+
+.img-compare__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.img-compare__before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.img-compare__before .img-compare__img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  height: 100%;
+  /* Use vw-based trick: image must be as wide as outer container.
+     We override width inline in the component via a container query workaround.
+     The simplest reliable approach: use 100cqw if supported, else fallback. */
+  width: 100cqw;
+  object-fit: cover;
+  object-position: left center;
+  max-width: none;
+}
+
+.img-compare__handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: all;
+}
+
+.img-compare__bar {
+  width: 2px;
+  flex: 1;
+  background: #fff;
+  box-shadow: 0 0 8px rgba(0,0,0,0.5);
+}
+
+.img-compare__knob {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #fff;
+  color: #18239e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.img-compare__handle--dragging .img-compare__knob {
+  transform: translateY(-50%) scale(1.15);
+}
+
+.img-compare__label {
+  position: absolute;
+  bottom: 10px;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.img-compare__label--before {
+  left: 10px;
+  z-index: 4;
+}
+
+.img-compare__label--after {
+  right: 10px;
+}

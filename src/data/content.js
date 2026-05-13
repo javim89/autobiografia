@@ -17,6 +17,7 @@ export const TIMELINE = [
     title: 'Facu terminada',
     desc: 'Después de años de cursada, logré el título. Primer gran hito adulto.',
     media: ['/media/2016-facu.jpg'],
+    compareImage: '/media/2016-facu-antes.jpg',
   },
   {
     year: '2018',
