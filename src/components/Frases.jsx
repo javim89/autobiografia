@@ -53,7 +53,7 @@ function FraseItem({ frase, isLast }) {
 
 export default function Frases() {
   return (
-    <div className="section-alt">
+    <div className="section-wrapper">
       <div className="section">
         <p className="section-label">Filosofía</p>
         <h2 className="section-title">Frases que<br /><span>me definen</span></h2>

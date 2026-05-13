@@ -37,7 +37,7 @@ function HobbyCard({ hobby }) {
 
 export default function Hobbies() {
   return (
-    <div className="section-wrapper">
+    <div className="section-light">
       <div className="section">
         <p className="section-label">Intereses</p>
         <h2 className="section-title">Lo que me<br /><span>mueve</span></h2>

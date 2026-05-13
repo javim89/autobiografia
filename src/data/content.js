@@ -28,7 +28,12 @@ export const TIMELINE = [
     year: '2022',
     title: 'Inglaterra',
     desc: 'Me fui a Inglaterra. Nueva lengua, nueva cultura, nueva versión.',
-    media: ['/media/2022-inglaterra.jpg'],
+    media: [
+      '/media/2022-inglaterra.jpg',
+      '/media/2022-inglaterra-1.jpg',
+      '/media/2022-inglaterra-2.jpg',
+      '/media/2022-inglaterra-3.jpg',
+    ],
   },
 ]
 

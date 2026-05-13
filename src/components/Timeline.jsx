@@ -2,9 +2,44 @@ import { useRef, useState, useCallback, useEffect } from 'react'
 import { TIMELINE } from '../data/content'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 
+function ImageCarousel({ images }) {
+  const [current, setCurrent] = useState(0)
+  const [paused, setPaused] = useState(false)
+  const intervalRef = useRef(null)
+
+  useEffect(() => {
+    if (paused) {
+      clearInterval(intervalRef.current)
+      return
+    }
+    intervalRef.current = setInterval(() => {
+      setCurrent(prev => (prev + 1) % images.length)
+    }, 2000)
+    return () => clearInterval(intervalRef.current)
+  }, [paused, images.length])
+
+  return (
+    <div
+      className="tl-carousel"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      {images.map((src, i) => (
+        <img
+          key={i}
+          src={src}
+          alt=""
+          className={`tl-media-item tl-carousel__img${i === current ? ' tl-carousel__img--active' : ''}`}
+        />
+      ))}
+    </div>
+  )
+}
+
 function TimelineCard({ item, side }) {
   const { ref, visible } = useScrollReveal()
   const hasMedia = item.media && item.media.length > 0
+  const isCarousel = hasMedia && item.media.length > 1
   const [easterActive, setEasterActive] = useState(false)
   const videoRef = useRef(null)
   const timerRef = useRef(null)
@@ -58,29 +93,33 @@ function TimelineCard({ item, side }) {
                   playsInline
                 />
               )}
-              {item.media.map((src, i) => {
-                const isVideo = /\.(mp4|webm|mov)$/i.test(src)
-                return isVideo ? (
-                  <video
-                    key={i}
-                    src={src}
-                    className="tl-media-item"
-                    style={item.easterVideo && easterActive ? { display: 'none' } : {}}
-                    muted
-                    loop
-                    playsInline
-                    controls
-                  />
-                ) : (
-                  <img
-                    key={i}
-                    src={src}
-                    alt=""
-                    className="tl-media-item"
-                    style={item.easterVideo && easterActive ? { display: 'none' } : {}}
-                  />
-                )
-              })}
+              {isCarousel ? (
+                <ImageCarousel images={item.media} />
+              ) : (
+                item.media.map((src, i) => {
+                  const isVideo = /\.(mp4|webm|mov)$/i.test(src)
+                  return isVideo ? (
+                    <video
+                      key={i}
+                      src={src}
+                      className="tl-media-item"
+                      style={item.easterVideo && easterActive ? { display: 'none' } : {}}
+                      muted
+                      loop
+                      playsInline
+                      controls
+                    />
+                  ) : (
+                    <img
+                      key={i}
+                      src={src}
+                      alt=""
+                      className="tl-media-item"
+                      style={item.easterVideo && easterActive ? { display: 'none' } : {}}
+                    />
+                  )
+                })
+              )}
             </div>
           )}
         </div>
