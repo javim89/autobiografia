@@ -1,14 +1,45 @@
+import { useRef, useState, useCallback, useEffect } from 'react'
 import { TIMELINE } from '../data/content'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 
 function TimelineCard({ item, side }) {
   const { ref, visible } = useScrollReveal()
   const hasMedia = item.media && item.media.length > 0
+  const [easterActive, setEasterActive] = useState(false)
+  const videoRef = useRef(null)
+  const timerRef = useRef(null)
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+    if (easterActive) {
+      video.currentTime = 0
+      video.play()
+    } else {
+      video.pause()
+      video.currentTime = 0
+    }
+  }, [easterActive])
+
+  const handleMouseEnter = useCallback(() => {
+    if (!item.easterVideo) return
+    timerRef.current = setTimeout(() => {
+      setEasterActive(true)
+    }, 3000)
+  }, [item.easterVideo])
+
+  const handleMouseLeave = useCallback(() => {
+    if (!item.easterVideo) return
+    clearTimeout(timerRef.current)
+    setEasterActive(false)
+  }, [item.easterVideo])
 
   return (
     <div
       ref={ref}
       className={`tl-card tl-card--${side} reveal${visible ? ' visible' : ''}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="tl-card__inner">
         <div className="tl-card__body">
@@ -16,6 +47,17 @@ function TimelineCard({ item, side }) {
           <p className="tl-card__desc">{item.desc}</p>
           {hasMedia && (
             <div className="tl-card__media">
+              {item.easterVideo && (
+                <video
+                  ref={videoRef}
+                  src={item.easterVideo}
+                  className="tl-media-item"
+                  style={{ display: easterActive ? 'block' : 'none' }}
+                  muted
+                  loop
+                  playsInline
+                />
+              )}
               {item.media.map((src, i) => {
                 const isVideo = /\.(mp4|webm|mov)$/i.test(src)
                 return isVideo ? (
@@ -23,13 +65,20 @@ function TimelineCard({ item, side }) {
                     key={i}
                     src={src}
                     className="tl-media-item"
+                    style={item.easterVideo && easterActive ? { display: 'none' } : {}}
                     muted
                     loop
                     playsInline
                     controls
                   />
                 ) : (
-                  <img key={i} src={src} alt="" className="tl-media-item" />
+                  <img
+                    key={i}
+                    src={src}
+                    alt=""
+                    className="tl-media-item"
+                    style={item.easterVideo && easterActive ? { display: 'none' } : {}}
+                  />
                 )
               })}
             </div>

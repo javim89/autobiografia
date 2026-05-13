@@ -10,6 +10,7 @@ export const TIMELINE = [
     title: 'El comienzo',
     desc: 'Inicié como youtuber. Sí, esa etapa.',
     media: ['/media/2007-mambru.jpg'],
+    easterVideo: '/media/2007-mambru-easter.mp4',
   },
   {
     year: '2016',
