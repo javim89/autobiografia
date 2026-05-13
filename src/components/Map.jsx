@@ -6,8 +6,8 @@ const TO   = { r: 0,   g: 21,  b: 255 }
 const MAX_HOVER = parseInt(import.meta.env.VITE_MAP_HOVER_MAX ?? '20', 10)
 
 function interpolateColor(count) {
-  if (count === 0) return `rgb(${FROM.r},${FROM.g},${FROM.b})`
-  const t = Math.min((count - 1) / (MAX_HOVER - 1), 1)
+  if (count <= 0) return `rgb(${FROM.r},${FROM.g},${FROM.b})`
+  const t = Math.min(count / MAX_HOVER, 1)
   const r = Math.round(FROM.r + (TO.r - FROM.r) * t)
   const g = Math.round(FROM.g + (TO.g - FROM.g) * t)
   const b = Math.round(FROM.b + (TO.b - FROM.b) * t)
