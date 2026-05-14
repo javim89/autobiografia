@@ -628,12 +628,8 @@ a {
 
 .frase-locked .frase-text {
   color: var(--muted);
-  filter: blur(5px);
+  filter: blur(8px);
   transition: filter 0.4s ease, color 0.4s ease;
-}
-
-.frase-locked:hover .frase-text {
-  filter: blur(3px);
 }
 
 .frase-locked.revealed .frase-text {
@@ -952,4 +948,95 @@ a {
 
 .img-compare__label--after {
   right: 10px;
+}
+
+/* ── Frase password modal ── */
+.frase-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20000;
+}
+
+.frase-modal {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem 2.5rem;
+  width: min(380px, 90vw);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.frase-modal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.frase-modal-subtitle {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.frase-modal-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.frase-modal-input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  color: var(--text);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.frase-modal-input:focus {
+  border-color: var(--accent);
+}
+
+.frase-modal-input--error {
+  border-color: #f87171;
+  animation: shake 0.3s ease;
+}
+
+.frase-modal-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.frase-modal-btn:hover {
+  opacity: 0.85;
+}
+
+.frase-modal-error {
+  font-size: 0.8rem;
+  color: #f87171;
+  margin: 0;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
 }

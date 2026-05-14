@@ -3,6 +3,7 @@ import { FRASES } from '../data/content'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { useToast } from './Toast'
 import { launchConfetti } from './Confetti'
+import FrasePasswordModal from './FrasePasswordModal'
 
 function EasterFrase({ hidden }) {
   return (
@@ -16,6 +17,7 @@ function FraseItem({ frase, isLast }) {
   const { ref, visible } = useScrollReveal()
   const [revealed, setRevealed] = useState(false)
   const [hovered, setHovered] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
   const { show } = useToast()
   const confettiFired = useRef(false)
 
@@ -35,30 +37,44 @@ function FraseItem({ frase, isLast }) {
     return () => observer.disconnect()
   }, [isLast, show])
 
-  const handleReveal = () => {
-    if (!frase.locked) return
+  const handleClick = () => {
+    if (!frase.locked || revealed) return
+    setModalOpen(true)
+  }
+
+  const handleSuccess = () => {
+    setModalOpen(false)
     setRevealed(true)
     show('🔞 Desbloqueaste la frase secreta')
   }
 
   return (
-    <div
-      ref={ref}
-      className={`frase-item reveal${visible ? ' visible' : ''}${frase.locked ? ` frase-locked${revealed ? ' revealed' : ''}` : ''}`}
-      onClick={handleReveal}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      role={frase.locked ? 'button' : undefined}
-      tabIndex={frase.locked ? 0 : undefined}
-    >
-      {frase.locked && (
-        <span className="frase-locked-label">
-          {revealed ? '🔓 Desbloqueada' : '🔒 +18 — Click para revelar'}
-        </span>
+    <>
+      <div
+        ref={ref}
+        className={`frase-item reveal${visible ? ' visible' : ''}${frase.locked ? ` frase-locked${revealed ? ' revealed' : ''}` : ''}`}
+        onClick={handleClick}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        role={frase.locked && !revealed ? 'button' : undefined}
+        tabIndex={frase.locked && !revealed ? 0 : undefined}
+      >
+        {frase.locked && (
+          <span className="frase-locked-label">
+            {revealed ? '🔓 Desbloqueada' : '🔒 +18 — Click para revelar'}
+          </span>
+        )}
+        {frase.easter ? <EasterFrase hidden={hovered} /> : <p className="frase-text">"{frase.text}"</p>}
+        <p className="frase-author">— {frase.author}</p>
+      </div>
+
+      {modalOpen && (
+        <FrasePasswordModal
+          onSuccess={handleSuccess}
+          onClose={() => setModalOpen(false)}
+        />
       )}
-      {frase.easter ? <EasterFrase hidden={hovered} /> : <p className="frase-text">"{frase.text}"</p>}
-      <p className="frase-author">— {frase.author}</p>
-    </div>
+    </>
   )
 }
 
