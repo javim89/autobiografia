@@ -22,6 +22,7 @@ export function useCursors() {
   const [remoteMapCursors, setRemoteMapCursors] = useState({})
   const [onlineCount, setOnlineCount] = useState(1)
   const [mapHoverCount, setMapHoverCount] = useState(0)
+  const [sectionHoverCounts, setSectionHoverCounts] = useState({})
 
   const channelRef = useRef(null)
   const lastSendRef = useRef(0)
@@ -30,6 +31,8 @@ export function useCursors() {
   const mapTtlTimers = useRef({})
   // { [sessionId]: true } — only hovering users are tracked
   const hoverMapRef = useRef({})
+  // { [sectionId]: { [sessionId]: true } }
+  const sectionHoverRef = useRef({})
 
   const supabase = useMemo(() => {
     const url = import.meta.env.VITE_SUPABASE_URL
@@ -95,6 +98,23 @@ export function useCursors() {
         }
         setMapHoverCount(Object.keys(hoverMapRef.current).length)
       })
+      .on('broadcast', { event: 'section_hover' }, ({ payload }) => {
+        const { id, section, hovering } = payload
+        if (!id || !section) return
+        if (hovering) {
+          if (!sectionHoverRef.current[section]) sectionHoverRef.current[section] = {}
+          sectionHoverRef.current[section][id] = true
+        } else {
+          if (sectionHoverRef.current[section]) {
+            delete sectionHoverRef.current[section][id]
+          }
+        }
+        setSectionHoverCounts(
+          Object.fromEntries(
+            Object.entries(sectionHoverRef.current).map(([s, users]) => [s, Object.keys(users).length])
+          )
+        )
+      })
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState()
         setOnlineCount(Object.keys(state).length)
@@ -102,8 +122,14 @@ export function useCursors() {
       .on('presence', { event: 'leave' }, ({ leftPresences }) => {
         leftPresences.forEach(p => {
           delete hoverMapRef.current[p.id]
+          Object.values(sectionHoverRef.current).forEach(users => delete users[p.id])
         })
         setMapHoverCount(Object.keys(hoverMapRef.current).length)
+        setSectionHoverCounts(
+          Object.fromEntries(
+            Object.entries(sectionHoverRef.current).map(([s, users]) => [s, Object.keys(users).length])
+          )
+        )
       })
       .subscribe(async (status) => {
         if (status === 'SUBSCRIBED') {
@@ -161,6 +187,29 @@ export function useCursors() {
     })
   }, [sessionId])
 
+  const setSectionHovering = useCallback((section, hovering) => {
+    // Update local count immediately (broadcast has self: false)
+    if (hovering) {
+      if (!sectionHoverRef.current[section]) sectionHoverRef.current[section] = {}
+      sectionHoverRef.current[section][sessionId] = true
+    } else {
+      if (sectionHoverRef.current[section]) {
+        delete sectionHoverRef.current[section][sessionId]
+      }
+    }
+    setSectionHoverCounts(
+      Object.fromEntries(
+        Object.entries(sectionHoverRef.current).map(([s, users]) => [s, Object.keys(users).length])
+      )
+    )
+
+    channelRef.current?.send({
+      type: 'broadcast',
+      event: 'section_hover',
+      payload: { id: sessionId, section, hovering },
+    })
+  }, [sessionId])
+
   // Filter out users who are sending map cursors from the global cursor list
   const filteredRemoteCursors = useMemo(() => {
     const result = { ...remoteCursors }
@@ -174,6 +223,8 @@ export function useCursors() {
     onlineCount,
     mapHoverCount,
     setMapHovering,
+    sectionHoverCounts,
+    setSectionHovering,
     sendCursor,
     sendMapCursor,
     sessionColor,

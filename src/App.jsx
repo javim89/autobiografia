@@ -5,12 +5,16 @@ import Origen from './components/Origen'
 import Hobbies from './components/Hobbies'
 import Frases from './components/Frases'
 import RemoteCursors from './components/RemoteCursors'
+import SectionLock from './components/SectionLock'
 import Toast from './components/Toast'
 import ScreenLoader from './components/ScreenLoader'
 import { useCursors } from './hooks/useCursors'
 import { useToast } from './components/Toast'
 
 const MIN_USERS = parseInt(import.meta.env.VITE_MIN_USERS_TO_ENTER || '0', 10)
+const MIN_TO_UNLOCK = import.meta.env.VITE_MIN_TO_UNLOCK_SECTION
+  ? parseInt(import.meta.env.VITE_MIN_TO_UNLOCK_SECTION, 10)
+  : null
 
 const KONAMI = ['ArrowUp','b','ArrowUp','b','a','ArrowDown']
 
@@ -22,9 +26,20 @@ function AppInner() {
   const konamiIndex = useRef(0)
   const [konamiRevealed, setKonamiRevealed] = useState(false)
   const [loaderDone, setLoaderDone] = useState(MIN_USERS <= 0)
+  const [unlockedSections, setUnlockedSections] = useState(new Set())
   const { show } = useToast()
 
-  const { remoteCursors, remoteMapCursors, onlineCount, mapHoverCount, setMapHovering, sendCursor, sendMapCursor } = useCursors()
+  const { remoteCursors, remoteMapCursors, onlineCount, mapHoverCount, setMapHovering, sectionHoverCounts, setSectionHovering, sendCursor, sendMapCursor } = useCursors()
+
+  const getSectionCount = useCallback((id) => {
+    if (MIN_TO_UNLOCK === null) return MIN_TO_UNLOCK
+    if (unlockedSections.has(id)) return MIN_TO_UNLOCK
+    const count = sectionHoverCounts[id] || 0
+    if (count >= MIN_TO_UNLOCK) {
+      setUnlockedSections(prev => new Set([...prev, id]))
+    }
+    return count
+  }, [sectionHoverCounts, unlockedSections])
   const handleLoaderReady = useCallback(() => setLoaderDone(true), [])
 
   // Console easter egg — fires once
@@ -120,15 +135,47 @@ function AppInner() {
 
       <main>
         <Hero onlineCount={onlineCount} />
-        <Origen
-          setMapHovering={setMapHovering}
-          mapHoverCount={mapHoverCount}
-          sendMapCursor={sendMapCursor}
-          remoteMapCursors={remoteMapCursors}
-        />
-        <Timeline />
-        <Hobbies />
-        <Frases konamiRevealed={konamiRevealed} />
+        <SectionLock
+          sectionId="origen"
+          count={getSectionCount('origen')}
+          minToUnlock={MIN_TO_UNLOCK}
+          onMouseEnter={() => setSectionHovering('origen', true)}
+          onMouseLeave={() => setSectionHovering('origen', false)}
+        >
+          <Origen
+            setMapHovering={setMapHovering}
+            mapHoverCount={mapHoverCount}
+            sendMapCursor={sendMapCursor}
+            remoteMapCursors={remoteMapCursors}
+          />
+        </SectionLock>
+        <SectionLock
+          sectionId="timeline"
+          count={getSectionCount('timeline')}
+          minToUnlock={MIN_TO_UNLOCK}
+          onMouseEnter={() => setSectionHovering('timeline', true)}
+          onMouseLeave={() => setSectionHovering('timeline', false)}
+        >
+          <Timeline />
+        </SectionLock>
+        <SectionLock
+          sectionId="hobbies"
+          count={getSectionCount('hobbies')}
+          minToUnlock={MIN_TO_UNLOCK}
+          onMouseEnter={() => setSectionHovering('hobbies', true)}
+          onMouseLeave={() => setSectionHovering('hobbies', false)}
+        >
+          <Hobbies />
+        </SectionLock>
+        <SectionLock
+          sectionId="frases"
+          count={getSectionCount('frases')}
+          minToUnlock={MIN_TO_UNLOCK}
+          onMouseEnter={() => setSectionHovering('frases', true)}
+          onMouseLeave={() => setSectionHovering('frases', false)}
+        >
+          <Frases konamiRevealed={konamiRevealed} />
+        </SectionLock>
       </main>
 
       <Toast />

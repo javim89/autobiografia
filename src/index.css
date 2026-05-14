@@ -1040,3 +1040,72 @@ a {
   25% { transform: translateX(-6px); }
   75% { transform: translateX(6px); }
 }
+
+/* ── Section Lock ─────────────────────────────────────────── */
+.section-lock-wrapper {
+  position: relative;
+}
+
+.section-lock-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  backdrop-filter: blur(18px) saturate(0.6);
+  -webkit-backdrop-filter: blur(18px) saturate(0.6);
+  background: rgba(24, 35, 158, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.section-lock-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+  padding: 2rem 2.5rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.section-lock-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.section-lock-label {
+  margin: 0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.65);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.section-lock-counter {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3rem;
+  line-height: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 0.15em;
+}
+
+.section-lock-current {
+  color: var(--accent);
+}
+
+.section-lock-sep {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 2rem;
+}
+
+.section-lock-max {
+  color: rgba(255, 255, 255, 0.5);
+}
