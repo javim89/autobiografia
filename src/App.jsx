@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import Hero from './components/Hero'
 import Timeline from './components/Timeline'
 import Origen from './components/Origen'
@@ -6,9 +6,12 @@ import Hobbies from './components/Hobbies'
 import Frases from './components/Frases'
 import RemoteCursors from './components/RemoteCursors'
 import Toast from './components/Toast'
+import ScreenLoader from './components/ScreenLoader'
 import { launchConfetti } from './components/Confetti'
 import { useCursors } from './hooks/useCursors'
 import { useToast } from './components/Toast'
+
+const MIN_USERS = parseInt(import.meta.env.VITE_MIN_USERS_TO_ENTER || '0', 10)
 
 const KONAMI = ['ArrowUp','b','ArrowUp','b','a','ArrowDown']
 
@@ -19,9 +22,11 @@ function AppInner() {
   const rafRef = useRef(null)
   const konamiIndex = useRef(0)
   const [konamiActive, setKonamiActive] = useState(false)
+  const [loaderDone, setLoaderDone] = useState(MIN_USERS <= 0)
   const { show } = useToast()
 
   const { remoteCursors, onlineCount, mapHoverCount, setMapHovering, sendCursor } = useCursors()
+  const handleLoaderReady = useCallback(() => setLoaderDone(true), [])
 
   // Console easter egg — fires once
   useEffect(() => {
@@ -106,6 +111,14 @@ function AppInner() {
 
   return (
     <>
+      {!loaderDone && (
+        <ScreenLoader
+          onlineCount={onlineCount}
+          maxUsers={MIN_USERS}
+          onReady={handleLoaderReady}
+        />
+      )}
+
       {/* Custom cursor — hidden on mobile via CSS */}
       <div ref={dotRef} className="cursor-dot" />
       <div ref={ringRef} className="cursor-ring" />
