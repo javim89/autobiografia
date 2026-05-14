@@ -53,9 +53,9 @@ export const HOBBIES = [
     desc: 'Gamer de corazón. El battle royale como arte.',
   },
   {
-    id: 'healthcare',
+    id: 'wellness',
     icon: '🧬',
-    name: 'Healthcare',
+    name: 'Wellness',
     desc: 'Nutrición, psicología, gym. El cuerpo y la mente como proyecto.',
   },
   {
@@ -82,6 +82,12 @@ export const FRASES = [
   },
   {
     id: 3,
+    text: 'Soy boludo, pero no le tiro piedras a la comisaria.',
+    author: 'Azu, con criterio',
+    locked: false,
+  },
+  {
+    id: 4,
     text: 'Algo va a salir, decía un loco que se hacía la paja.',
     author: 'fuente desconocida',
     locked: true,

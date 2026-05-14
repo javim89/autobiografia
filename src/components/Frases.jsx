@@ -4,26 +4,9 @@ import { useScrollReveal } from '../hooks/useScrollReveal'
 import { useToast } from './Toast'
 import { launchConfetti } from './Confetti'
 
-function EasterFrase({ text }) {
-  // "Don't quit" → ["Do", "n't qu", "it"]
-  const [hidden, setHidden] = useState(false)
-  const timerRef = useRef(null)
-
-  const handleEnter = () => {
-    timerRef.current = setTimeout(() => setHidden(true), 1000)
-  }
-
-  const handleLeave = () => {
-    clearTimeout(timerRef.current)
-    setHidden(false)
-  }
-
+function EasterFrase({ hidden }) {
   return (
-    <p
-      className="frase-text"
-      onMouseEnter={handleEnter}
-      onMouseLeave={handleLeave}
-    >
+    <p className="frase-text">
       "Do<span className={`frase-easter-hidden${hidden ? ' gone' : ''}`}>n't</span>{' '}<span className={`frase-easter-hidden${hidden ? ' gone' : ''}`}>qu</span>it"
     </p>
   )
@@ -32,6 +15,7 @@ function EasterFrase({ text }) {
 function FraseItem({ frase, isLast }) {
   const { ref, visible } = useScrollReveal()
   const [revealed, setRevealed] = useState(false)
+  const [hovered, setHovered] = useState(false)
   const { show } = useToast()
   const confettiFired = useRef(false)
 
@@ -62,6 +46,8 @@ function FraseItem({ frase, isLast }) {
       ref={ref}
       className={`frase-item reveal${visible ? ' visible' : ''}${frase.locked ? ` frase-locked${revealed ? ' revealed' : ''}` : ''}`}
       onClick={handleReveal}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       role={frase.locked ? 'button' : undefined}
       tabIndex={frase.locked ? 0 : undefined}
     >
@@ -70,7 +56,7 @@ function FraseItem({ frase, isLast }) {
           {revealed ? '🔓 Desbloqueada' : '🔒 +18 — Click para revelar'}
         </span>
       )}
-      {frase.easter ? <EasterFrase text={frase.text} /> : <p className="frase-text">"{frase.text}"</p>}
+      {frase.easter ? <EasterFrase hidden={hovered} /> : <p className="frase-text">"{frase.text}"</p>}
       <p className="frase-author">— {frase.author}</p>
     </div>
   )
