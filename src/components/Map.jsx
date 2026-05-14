@@ -7,12 +7,8 @@ const TO   = { r: 0,   g: 21,  b: 255 }
 const MAX_HOVER = parseInt(import.meta.env.VITE_MAP_HOVER_MAX ?? '20', 10)
 
 function interpolateColor(count) {
-  if (count <= 0) return `rgb(${FROM.r},${FROM.g},${FROM.b})`
-  const t = Math.min(count / MAX_HOVER, 1)
-  const r = Math.round(FROM.r + (TO.r - FROM.r) * t)
-  const g = Math.round(FROM.g + (TO.g - FROM.g) * t)
-  const b = Math.round(FROM.b + (TO.b - FROM.b) * t)
-  return `rgb(${r},${g},${b})`
+  if (count < MAX_HOVER) return `rgb(${FROM.r},${FROM.g},${FROM.b})`
+  return `rgb(${TO.r},${TO.g},${TO.b})`
 }
 
 // Converts SVG coordinate space → current screen pixels using the live CTM.
