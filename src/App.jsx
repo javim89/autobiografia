@@ -25,7 +25,7 @@ function AppInner() {
   const [loaderDone, setLoaderDone] = useState(MIN_USERS <= 0)
   const { show } = useToast()
 
-  const { remoteCursors, onlineCount, mapHoverCount, setMapHovering, sendCursor } = useCursors()
+  const { remoteCursors, remoteMapCursors, onlineCount, mapHoverCount, setMapHovering, sendCursor, sendMapCursor } = useCursors()
   const handleLoaderReady = useCallback(() => setLoaderDone(true), [])
 
   // Console easter egg — fires once
@@ -60,7 +60,7 @@ function AppInner() {
       dot.style.left = `${mouseX}px`
       dot.style.top = `${mouseY}px`
 
-      // send position as % for remote cursors
+      // send position as % of viewport for general cursor sync
       sendCursor(
         (mouseX / window.innerWidth) * 100,
         (mouseY / window.innerHeight) * 100
@@ -127,7 +127,12 @@ function AppInner() {
 
       <main>
         <Hero onlineCount={onlineCount} />
-        <Origen setMapHovering={setMapHovering} mapHoverCount={mapHoverCount} />
+        <Origen
+          setMapHovering={setMapHovering}
+          mapHoverCount={mapHoverCount}
+          sendMapCursor={sendMapCursor}
+          remoteMapCursors={remoteMapCursors}
+        />
         <Timeline />
         <Hobbies />
         <Frases />

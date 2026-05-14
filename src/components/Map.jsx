@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 // Color interpolation: #E8E9D6 (1 user) → #0015FF (MAX users)
 const FROM = { r: 232, g: 233, b: 214 }
@@ -14,7 +15,46 @@ function interpolateColor(count) {
   return `rgb(${r},${g},${b})`
 }
 
-export default function Map({ setMapHovering, mapHoverCount }) {
+// Converts SVG coordinate space → current screen pixels using the live CTM.
+// This works correctly regardless of screen size, zoom, or scroll.
+function svgToScreen(svgEl, svgX, svgY) {
+  const pt = svgEl.createSVGPoint()
+  pt.x = svgX
+  pt.y = svgY
+  return pt.matrixTransform(svgEl.getScreenCTM())
+}
+
+function RemoteMapCursorDot({ svgX, svgY, color, getSvgEl }) {
+  const [pos, setPos] = useState(null)
+
+  useEffect(() => {
+    const update = () => {
+      const svgEl = getSvgEl()
+      if (!svgEl) return
+      try {
+        const screen = svgToScreen(svgEl, svgX, svgY)
+        setPos({ left: screen.x, top: screen.y })
+      } catch (_) {}
+    }
+    update()
+    window.addEventListener('resize', update)
+    window.addEventListener('scroll', update, { passive: true })
+    return () => {
+      window.removeEventListener('resize', update)
+      window.removeEventListener('scroll', update)
+    }
+  }, [svgX, svgY, getSvgEl])
+
+  if (!pos) return null
+  return createPortal(
+    <div className="remote-cursor" style={{ left: pos.left, top: pos.top }}>
+      <div className="remote-cursor-dot" style={{ background: color }} />
+    </div>,
+    document.body
+  )
+}
+
+export default function Map({ setMapHovering, mapHoverCount, sendMapCursor, remoteMapCursors }) {
   const containerRef = useRef(null)
   const [svgContent, setSvgContent] = useState(null)
 
@@ -52,6 +92,38 @@ export default function Map({ setMapHovering, mapHoverCount }) {
     el.style.fill = interpolateColor(mapHoverCount)
   }, [mapHoverCount, svgContent])
 
+  // Track mouse over the map container and broadcast SVG-space coordinates.
+  // SVG coordinate space is invariant to screen size/resolution — the same
+  // svgX/svgY always maps to the same visual point on the map on any device.
+  useEffect(() => {
+    if (!svgContent || !sendMapCursor) return
+    const container = containerRef.current
+    if (!container) return
+
+    const onMove = (e) => {
+      const svgEl = container.querySelector('svg')
+      if (!svgEl) return
+      try {
+        const pt = svgEl.createSVGPoint()
+        pt.x = e.clientX
+        pt.y = e.clientY
+        const svgPt = pt.matrixTransform(svgEl.getScreenCTM().inverse())
+        sendMapCursor(svgPt.x, svgPt.y)
+      } catch (_) {}
+    }
+
+    const onLeave = () => sendMapCursor(null, null)
+
+    container.addEventListener('mousemove', onMove, { passive: true })
+    container.addEventListener('mouseleave', onLeave)
+    return () => {
+      container.removeEventListener('mousemove', onMove)
+      container.removeEventListener('mouseleave', onLeave)
+    }
+  }, [svgContent, sendMapCursor])
+
+  const getSvgEl = () => containerRef.current?.querySelector('svg')
+
   const count = mapHoverCount ?? 0
 
   return (
@@ -74,6 +146,16 @@ export default function Map({ setMapHovering, mapHoverCount }) {
             : `${count} / ${MAX_HOVER} para iluminar Trenque Lauquen`
         }
       </p>
+
+      {remoteMapCursors && Object.entries(remoteMapCursors).map(([id, { svgX, svgY, color }]) => (
+        <RemoteMapCursorDot
+          key={id}
+          svgX={svgX}
+          svgY={svgY}
+          color={color}
+          getSvgEl={getSvgEl}
+        />
+      ))}
     </div>
   )
 }

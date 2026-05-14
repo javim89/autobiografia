@@ -19,12 +19,15 @@ export function useCursors() {
   const sessionColor = useMemo(() => randomColor(), [])
 
   const [remoteCursors, setRemoteCursors] = useState({})
+  const [remoteMapCursors, setRemoteMapCursors] = useState({})
   const [onlineCount, setOnlineCount] = useState(1)
   const [mapHoverCount, setMapHoverCount] = useState(0)
 
   const channelRef = useRef(null)
   const lastSendRef = useRef(0)
+  const lastMapSendRef = useRef(0)
   const ttlTimers = useRef({})
+  const mapTtlTimers = useRef({})
   // { [sessionId]: true } — only hovering users are tracked
   const hoverMapRef = useRef({})
 
@@ -52,6 +55,30 @@ export function useCursors() {
         clearTimeout(ttlTimers.current[id])
         ttlTimers.current[id] = setTimeout(() => {
           setRemoteCursors(prev => {
+            const next = { ...prev }
+            delete next[id]
+            return next
+          })
+        }, CURSOR_TTL)
+      })
+      .on('broadcast', { event: 'map_cursor' }, ({ payload }) => {
+        const { id, svgX, svgY, color } = payload
+        if (!id) return
+
+        if (svgX === null) {
+          setRemoteMapCursors(prev => {
+            const next = { ...prev }
+            delete next[id]
+            return next
+          })
+          return
+        }
+
+        setRemoteMapCursors(prev => ({ ...prev, [id]: { svgX, svgY, color } }))
+
+        clearTimeout(mapTtlTimers.current[id])
+        mapTtlTimers.current[id] = setTimeout(() => {
+          setRemoteMapCursors(prev => {
             const next = { ...prev }
             delete next[id]
             return next
@@ -89,6 +116,7 @@ export function useCursors() {
     return () => {
       supabase.removeChannel(channel)
       Object.values(ttlTimers.current).forEach(clearTimeout)
+      Object.values(mapTtlTimers.current).forEach(clearTimeout)
     }
   }, [supabase, sessionId])
 
@@ -101,6 +129,19 @@ export function useCursors() {
       type: 'broadcast',
       event: 'cursor',
       payload: { id: sessionId, x, y, color: sessionColor },
+    })
+  }, [sessionId, sessionColor])
+
+  // Broadcasts cursor position as SVG coordinate space — consistent across any screen size
+  const sendMapCursor = useCallback((svgX, svgY) => {
+    const now = Date.now()
+    if (svgX !== null && now - lastMapSendRef.current < THROTTLE_MS) return
+    lastMapSendRef.current = now
+
+    channelRef.current?.send({
+      type: 'broadcast',
+      event: 'map_cursor',
+      payload: { id: sessionId, svgX, svgY, color: sessionColor },
     })
   }, [sessionId, sessionColor])
 
@@ -120,5 +161,21 @@ export function useCursors() {
     })
   }, [sessionId])
 
-  return { remoteCursors, onlineCount, mapHoverCount, setMapHovering, sendCursor, sessionColor }
+  // Filter out users who are sending map cursors from the global cursor list
+  const filteredRemoteCursors = useMemo(() => {
+    const result = { ...remoteCursors }
+    Object.keys(remoteMapCursors).forEach(id => delete result[id])
+    return result
+  }, [remoteCursors, remoteMapCursors])
+
+  return {
+    remoteCursors: filteredRemoteCursors,
+    remoteMapCursors,
+    onlineCount,
+    mapHoverCount,
+    setMapHovering,
+    sendCursor,
+    sendMapCursor,
+    sessionColor,
+  }
 }

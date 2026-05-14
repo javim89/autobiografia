@@ -2,7 +2,7 @@ import { ORIGEN } from '../data/content'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import Map from './Map'
 
-export default function Origen({ setMapHovering, mapHoverCount }) {
+export default function Origen({ setMapHovering, mapHoverCount, sendMapCursor, remoteMapCursors }) {
   const { ref, visible } = useScrollReveal()
 
   return (
@@ -28,7 +28,12 @@ export default function Origen({ setMapHovering, mapHoverCount }) {
             Easter egg: pasá el cursor sobre el mapa y pintá mi ciudad.
           </p>
         </div>
-        <Map setMapHovering={setMapHovering} mapHoverCount={mapHoverCount} />
+        <Map
+          setMapHovering={setMapHovering}
+          mapHoverCount={mapHoverCount}
+          sendMapCursor={sendMapCursor}
+          remoteMapCursors={remoteMapCursors}
+        />
       </div>
       </div>
     </div>
