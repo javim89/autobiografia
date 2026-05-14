@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import { FRASES } from '../data/content'
 import { useScrollReveal } from '../hooks/useScrollReveal'
 import { useToast } from './Toast'
-import { launchConfetti } from './Confetti'
 import FrasePasswordModal from './FrasePasswordModal'
 
 function EasterFrase({ hidden }) {
@@ -13,11 +12,14 @@ function EasterFrase({ hidden }) {
   )
 }
 
-function FraseItem({ frase, isLast }) {
+function FraseItem({ frase, isLast, forceReveal }) {
   const { ref, visible } = useScrollReveal()
   const [revealed, setRevealed] = useState(false)
   const [hovered, setHovered] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
+
+  const isVisible = forceReveal || revealed
+  const isRevealed = revealed
   const { show } = useToast()
   const confettiFired = useRef(false)
 
@@ -27,7 +29,6 @@ function FraseItem({ frase, isLast }) {
       ([entry]) => {
         if (entry.isIntersecting && !confettiFired.current) {
           confettiFired.current = true
-          launchConfetti()
           show('🎉 ¡Llegaste al final!')
         }
       },
@@ -38,7 +39,7 @@ function FraseItem({ frase, isLast }) {
   }, [isLast, show])
 
   const handleClick = () => {
-    if (!frase.locked || revealed) return
+    if (!frase.locked || isRevealed || !isVisible) return
     setModalOpen(true)
   }
 
@@ -52,16 +53,16 @@ function FraseItem({ frase, isLast }) {
     <>
       <div
         ref={ref}
-        className={`frase-item reveal${visible ? ' visible' : ''}${frase.locked ? ` frase-locked${revealed ? ' revealed' : ''}` : ''}`}
+        className={`frase-item reveal${visible ? ' visible' : ''}${frase.locked ? ` frase-locked${isVisible ? ' visible' : ''}${isRevealed ? ' revealed' : ''}` : ''}`}
         onClick={handleClick}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        role={frase.locked && !revealed ? 'button' : undefined}
-        tabIndex={frase.locked && !revealed ? 0 : undefined}
+        role={frase.locked && isVisible && !isRevealed ? 'button' : undefined}
+        tabIndex={frase.locked && isVisible && !isRevealed ? 0 : undefined}
       >
-        {frase.locked && (
+        {frase.locked && isVisible && (
           <span className="frase-locked-label">
-            {revealed ? '🔓 Desbloqueada' : '🔒 +18 — Click para revelar'}
+            {isRevealed ? '🔓 Desbloqueada' : '🔒 +18 — Click para revelar'}
           </span>
         )}
         {frase.easter ? <EasterFrase hidden={hovered} /> : <p className="frase-text">"{frase.text}"</p>}
@@ -78,7 +79,7 @@ function FraseItem({ frase, isLast }) {
   )
 }
 
-export default function Frases() {
+export default function Frases({ konamiRevealed }) {
   return (
     <div className="section-wrapper">
       <div className="section">
@@ -86,7 +87,12 @@ export default function Frases() {
         <h2 className="section-title">Frases que<br /><span>me definen</span></h2>
         <div className="frases-list">
           {FRASES.map((f, i) => (
-            <FraseItem key={f.id} frase={f} isLast={i === FRASES.length - 1} />
+            <FraseItem
+              key={f.id}
+              frase={f}
+              isLast={i === FRASES.length - 1}
+              forceReveal={f.locked && konamiRevealed}
+            />
           ))}
         </div>
       </div>

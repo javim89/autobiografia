@@ -7,7 +7,6 @@ import Frases from './components/Frases'
 import RemoteCursors from './components/RemoteCursors'
 import Toast from './components/Toast'
 import ScreenLoader from './components/ScreenLoader'
-import { launchConfetti } from './components/Confetti'
 import { useCursors } from './hooks/useCursors'
 import { useToast } from './components/Toast'
 
@@ -21,7 +20,7 @@ function AppInner() {
   const ringPos = useRef({ x: 0, y: 0 })
   const rafRef = useRef(null)
   const konamiIndex = useRef(0)
-  const [konamiActive, setKonamiActive] = useState(false)
+  const [konamiRevealed, setKonamiRevealed] = useState(false)
   const [loaderDone, setLoaderDone] = useState(MIN_USERS <= 0)
   const { show } = useToast()
 
@@ -91,10 +90,8 @@ function AppInner() {
         konamiIndex.current++
         if (konamiIndex.current === KONAMI.length) {
           konamiIndex.current = 0
-          setKonamiActive(true)
-          launchConfetti()
-          show('🌈 KONAMI CODE ACTIVADO')
-          setTimeout(() => setKonamiActive(false), 4000)
+          setKonamiRevealed(true)
+          show('🔓 Frase secreta desbloqueada')
         }
       } else {
         konamiIndex.current = e.key === KONAMI[0] ? 1 : 0
@@ -104,10 +101,6 @@ function AppInner() {
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [show])
-
-  useEffect(() => {
-    document.body.classList.toggle('konami-active', konamiActive)
-  }, [konamiActive])
 
   return (
     <>
@@ -135,7 +128,7 @@ function AppInner() {
         />
         <Timeline />
         <Hobbies />
-        <Frases />
+        <Frases konamiRevealed={konamiRevealed} />
       </main>
 
       <Toast />
