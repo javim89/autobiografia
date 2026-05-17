@@ -20,7 +20,7 @@ function svgToScreen(svgEl, svgX, svgY) {
   return pt.matrixTransform(svgEl.getScreenCTM())
 }
 
-function RemoteMapCursorDot({ svgX, svgY, color, getSvgEl }) {
+function RemoteMapCursorDot({ svgX, svgY, color, name, getSvgEl }) {
   const [pos, setPos] = useState(null)
 
   useEffect(() => {
@@ -45,6 +45,11 @@ function RemoteMapCursorDot({ svgX, svgY, color, getSvgEl }) {
   return createPortal(
     <div className="remote-cursor" style={{ left: pos.left, top: pos.top }}>
       <div className="remote-cursor-dot" style={{ background: color }} />
+      {name && (
+        <div className="remote-cursor-label" style={{ color, borderColor: color }}>
+          {name}
+        </div>
+      )}
     </div>,
     document.body
   )
@@ -143,12 +148,13 @@ export default function Map({ setMapHovering, mapHoverCount, sendMapCursor, remo
         }
       </p>
 
-      {remoteMapCursors && Object.entries(remoteMapCursors).map(([id, { svgX, svgY, color }]) => (
+      {remoteMapCursors && Object.entries(remoteMapCursors).map(([id, { svgX, svgY, color, name }]) => (
         <RemoteMapCursorDot
           key={id}
           svgX={svgX}
           svgY={svgY}
           color={color}
+          name={name}
           getSvgEl={getSvgEl}
         />
       ))}
