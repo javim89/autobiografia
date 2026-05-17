@@ -67,7 +67,7 @@ export function useCursors(userName = '') {
         }, CURSOR_TTL)
       })
       .on('broadcast', { event: 'map_cursor' }, ({ payload }) => {
-        const { id, svgX, svgY, color } = payload
+        const { id, svgX, svgY, color, name } = payload
         if (!id) return
 
         if (svgX === null) {
@@ -79,7 +79,7 @@ export function useCursors(userName = '') {
           return
         }
 
-        setRemoteMapCursors(prev => ({ ...prev, [id]: { svgX, svgY, color } }))
+        setRemoteMapCursors(prev => ({ ...prev, [id]: { svgX, svgY, color, name } }))
 
         clearTimeout(mapTtlTimers.current[id])
         mapTtlTimers.current[id] = setTimeout(() => {
@@ -169,7 +169,7 @@ export function useCursors(userName = '') {
     channelRef.current?.send({
       type: 'broadcast',
       event: 'map_cursor',
-      payload: { id: sessionId, svgX, svgY, color: sessionColor },
+      payload: { id: sessionId, svgX, svgY, color: sessionColor, name: nameRef.current },
     })
   }, [sessionId, sessionColor])
 
