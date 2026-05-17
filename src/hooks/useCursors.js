@@ -2,7 +2,7 @@ import { useEffect, useRef, useMemo, useState, useCallback } from 'react'
 import { createClient } from '@supabase/supabase-js'
 
 const CHANNEL = 'azu-bio-cursors'
-const CURSOR_TTL = 5000   // ms — remove cursor after inactivity
+const CURSOR_TTL = 30000  // ms — remove cursor after inactivity
 const THROTTLE_MS = 40    // ~25fps
 
 function randomId() {
@@ -125,6 +125,10 @@ export function useCursors(userName = '') {
         leftPresences.forEach(p => {
           delete hoverMapRef.current[p.id]
           Object.values(sectionHoverRef.current).forEach(users => delete users[p.id])
+          clearTimeout(ttlTimers.current[p.id])
+          clearTimeout(mapTtlTimers.current[p.id])
+          setRemoteCursors(prev => { const next = { ...prev }; delete next[p.id]; return next })
+          setRemoteMapCursors(prev => { const next = { ...prev }; delete next[p.id]; return next })
         })
         setMapHoverCount(Object.keys(hoverMapRef.current).length)
         setSectionHoverCounts(
