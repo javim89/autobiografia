@@ -27,9 +27,10 @@ function AppInner() {
   const [konamiRevealed, setKonamiRevealed] = useState(false)
   const [loaderDone, setLoaderDone] = useState(MIN_USERS <= 0)
   const [unlockedSections, setUnlockedSections] = useState(new Set())
+  const [userName, setUserName] = useState('')
   const { show } = useToast()
 
-  const { remoteCursors, remoteMapCursors, onlineCount, mapHoverCount, setMapHovering, sectionHoverCounts, setSectionHovering, sendCursor, sendMapCursor } = useCursors()
+  const { remoteCursors, remoteMapCursors, onlineCount, mapHoverCount, setMapHovering, sectionHoverCounts, setSectionHovering, sendCursor, sendMapCursor } = useCursors(userName)
 
   const getSectionCount = useCallback((id) => {
     if (MIN_TO_UNLOCK === null) return MIN_TO_UNLOCK
@@ -40,7 +41,10 @@ function AppInner() {
     }
     return count
   }, [sectionHoverCounts, unlockedSections])
-  const handleLoaderReady = useCallback(() => setLoaderDone(true), [])
+  const handleLoaderReady = useCallback((name) => {
+    setUserName(name)
+    setLoaderDone(true)
+  }, [])
 
   // Console easter egg — fires once
   useEffect(() => {

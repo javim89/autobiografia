@@ -14,9 +14,11 @@ function randomColor() {
   return colors[Math.floor(Math.random() * colors.length)]
 }
 
-export function useCursors() {
+export function useCursors(userName = '') {
   const sessionId = useMemo(() => randomId(), [])
   const sessionColor = useMemo(() => randomColor(), [])
+  const nameRef = useRef(userName)
+  useEffect(() => { nameRef.current = userName }, [userName])
 
   const [remoteCursors, setRemoteCursors] = useState({})
   const [remoteMapCursors, setRemoteMapCursors] = useState({})
@@ -50,10 +52,10 @@ export function useCursors() {
 
     channel
       .on('broadcast', { event: 'cursor' }, ({ payload }) => {
-        const { id, x, y, color } = payload
+        const { id, x, y, color, name } = payload
         if (!id) return
 
-        setRemoteCursors(prev => ({ ...prev, [id]: { x, y, color } }))
+        setRemoteCursors(prev => ({ ...prev, [id]: { x, y, color, name } }))
 
         clearTimeout(ttlTimers.current[id])
         ttlTimers.current[id] = setTimeout(() => {
@@ -154,7 +156,7 @@ export function useCursors() {
     channelRef.current?.send({
       type: 'broadcast',
       event: 'cursor',
-      payload: { id: sessionId, x, y, color: sessionColor },
+      payload: { id: sessionId, x, y, color: sessionColor, name: nameRef.current },
     })
   }, [sessionId, sessionColor])
 

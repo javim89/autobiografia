@@ -243,6 +243,7 @@ function LiquidCanvas({ userCount, maxUsers, color }) {
 export default function ScreenLoader({ onlineCount, maxUsers, onReady }) {
   const [isReady, setIsReady] = useState(false)
   const [fadeOut, setFadeOut] = useState(false)
+  const [name, setName] = useState('')
 
   // Read accent color from CSS token
   const accentColor = getComputedStyle(document.documentElement)
@@ -251,11 +252,13 @@ export default function ScreenLoader({ onlineCount, maxUsers, onReady }) {
   useEffect(() => {
     if (onlineCount >= maxUsers && !isReady) {
       setIsReady(true)
-      // Brief pause to let the "¡Listo!" state show, then fade out
-      setTimeout(() => setFadeOut(true), 1200)
-      setTimeout(onReady, 1800)
     }
-  }, [onlineCount, maxUsers, isReady, onReady])
+  }, [onlineCount, maxUsers, isReady])
+
+  const handleEnter = useCallback(() => {
+    setFadeOut(true)
+    setTimeout(() => onReady(name.trim()), 600)
+  }, [name, onReady])
 
   const clampedCount = Math.min(onlineCount, maxUsers)
 
@@ -279,6 +282,26 @@ export default function ScreenLoader({ onlineCount, maxUsers, onReady }) {
         <div className="screen-loader__label" style={{ color: isReady ? accentColor : undefined }}>
           {isReady ? '¡Listo!' : 'para entrar a la web'}
         </div>
+      </div>
+
+      <div className="screen-loader__enter">
+        <input
+          className="screen-loader__name-input"
+          type="text"
+          placeholder="tu nombre (opcional)"
+          maxLength={20}
+          value={name}
+          onChange={e => setName(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && isReady && handleEnter()}
+        />
+        <button
+          className="screen-loader__enter-btn"
+          disabled={!isReady}
+          onClick={handleEnter}
+          style={isReady ? { borderColor: accentColor, color: accentColor } : undefined}
+        >
+          Entrar
+        </button>
       </div>
     </div>
   )

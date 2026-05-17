@@ -43,14 +43,22 @@ function TimelineCard({ item, side }) {
   const isCarousel = hasMedia && item.media.length > 1
   const [easterActive, setEasterActive] = useState(false)
   const videoRef = useRef(null)
-  const timerRef = useRef(null)
 
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
     if (easterActive) {
       video.currentTime = 0
-      video.play()
+      video.muted = false
+      video.volume = 1
+      const playPromise = video.play()
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Autoplay with sound was blocked; play muted as fallback
+          video.muted = true
+          video.play().catch(() => {})
+        })
+      }
     } else {
       video.pause()
       video.currentTime = 0
@@ -59,14 +67,11 @@ function TimelineCard({ item, side }) {
 
   const handleMouseEnter = useCallback(() => {
     if (!item.easterVideo) return
-    timerRef.current = setTimeout(() => {
-      setEasterActive(true)
-    }, 3000)
+    setEasterActive(true)
   }, [item.easterVideo])
 
   const handleMouseLeave = useCallback(() => {
     if (!item.easterVideo) return
-    clearTimeout(timerRef.current)
     setEasterActive(false)
   }, [item.easterVideo])
 
@@ -74,22 +79,23 @@ function TimelineCard({ item, side }) {
     <div
       ref={ref}
       className={`tl-card tl-card--${side} reveal${visible ? ' visible' : ''}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       <div className="tl-card__inner">
         <div className="tl-card__body">
           <h3 className="tl-card__title">{item.title}</h3>
           <p className="tl-card__desc">{item.desc}</p>
           {hasMedia && (
-            <div className="tl-card__media">
+            <div
+              className="tl-card__media"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+            >
               {item.easterVideo && (
                 <video
                   ref={videoRef}
                   src={item.easterVideo}
                   className="tl-media-item"
                   style={{ display: easterActive ? 'block' : 'none' }}
-                  muted
                   loop
                   playsInline
                 />
