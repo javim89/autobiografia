@@ -8,27 +8,27 @@ export const TIMELINE = [
   {
     year: '2007',
     title: 'El comienzo',
-    desc: 'Inicié como youtuber. Sí, esa etapa.',
+    desc: 'Debut y retiro del mundo YouTube.',
     media: ['/media/2007-mambru.jpg'],
     easterVideo: '/media/2007-mambru-easter.mp4',
   },
   {
     year: '2016',
     title: 'Facu terminada',
-    desc: 'Después de años de cursada, logré el título. Primer gran hito adulto.',
+    desc: 'Años de cursada y por fin el título.',
     media: ['/media/2016-facu.jpg'],
     compareImage: '/media/2016-facu-antes.jpg',
   },
   {
     year: '2018',
     title: 'Monat',
-    desc: 'Entré al mundo de Monat — ventas, liderazgo y mucho aprendizaje.',
+    desc: 'Me metí en un mundo que no conocía para nada.',
     media: ['/media/2018-monat.jpg'],
   },
   {
     year: '2022',
     title: 'Inglaterra',
-    desc: 'Me fui a Inglaterra. Nueva lengua, nueva cultura, nueva versión.',
+    desc: 'Me fui con la idea de aprender un nuevo idioma y cultura.',
     media: [
       '/media/2022-inglaterra.jpg',
       '/media/2022-inglaterra-1.jpg',
@@ -42,27 +42,24 @@ export const ORIGEN = {
   ciudad: 'Trenque Lauquen',
   provincia: 'Buenos Aires',
   description:
-    'Nací en <strong>Trenque Lauquen</strong>, una ciudad en el medio de la pampa bonaerense. Donde el horizonte es infinito y el asado es religión.',
+    'Ciudad de avenidas anchas y murales de <strong>Campodónico</strong> que te frenan en la vereda.',
 }
 
 export const HOBBIES = [
   {
-    id: 'fortnite',
-    icon: '🎮',
-    name: 'Fortnite',
-    desc: 'Gamer de corazón. El battle royale como arte.',
+    id: 'cocina',
+    icon: '🍳',
+    name: 'Cocinar',
   },
   {
     id: 'wellness',
     icon: '🧬',
     name: 'Wellness',
-    desc: 'Nutrición, psicología, gym. El cuerpo y la mente como proyecto.',
   },
   {
-    id: 'cocina',
-    icon: '🍳',
-    name: 'Cocinar',
-    desc: 'La cocina como ritual. Creatividad comestible.',
+    id: 'fortnite',
+    icon: '🎮',
+    name: 'Fortnite',
   },
 ]
 

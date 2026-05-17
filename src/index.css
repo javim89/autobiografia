@@ -533,21 +533,6 @@ a {
   transform: translateY(-4px);
 }
 
-.hobby-card.fortnite-epic {
-  border-color: #a855f7;
-  box-shadow: 0 0 30px rgba(168, 85, 247, 0.35), 0 0 60px rgba(168, 85, 247, 0.1);
-  background: linear-gradient(135deg, var(--bg2), #2d1b4e);
-}
-
-.hobby-card.fortnite-epic .hobby-icon {
-  animation: epic-pulse 0.8s ease-in-out infinite alternate;
-}
-
-@keyframes epic-pulse {
-  from { transform: scale(1); text-shadow: 0 0 8px rgba(168,85,247,0.6); }
-  to   { transform: scale(1.15); text-shadow: 0 0 20px rgba(168,85,247,0.9); }
-}
-
 .hobby-icon {
   font-size: 2.5rem;
   display: block;
@@ -587,18 +572,12 @@ a {
 
 .frase-easter-hidden {
   display: inline-block;
-  opacity: 1;
-  max-width: 6ch;
-  overflow: hidden;
-  vertical-align: bottom;
-  transition: opacity 0.5s ease, max-width 0.5s ease, letter-spacing 0.5s ease;
-  letter-spacing: normal;
+  filter: blur(0px);
+  transition: filter 0.4s ease;
 }
 
 .frase-easter-hidden.gone {
-  opacity: 0;
-  max-width: 0;
-  letter-spacing: -1em;
+  filter: blur(4px);
 }
 
 .frase-text {

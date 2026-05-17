@@ -55,11 +55,9 @@ function AppInner() {
     console.log(
       '%cAquí van los easter eggs:\n'
       + '  1. Frase #3 → click para revelar\n'
-      + '  2. Card Fortnite → hover 3s → modo épico\n'
-      + '  3. Scroll hasta el final → confetti\n'
-      + '  4. ↑B↑BA↓ → modo arcoíris\n'
-      + '  5. Mapa de Bs As → pasá por Trenque Lauquen\n'
-      + '  6. Ya encontraste este 😏',
+      + '  2. Scroll hasta el final → confetti\n'
+      + '  3. ↑B↑BA↓ → modo arcoíris\n'
+      + '  4. Ya encontraste este 😏',
       'color: #ffffff; font-size: 12px; font-family: monospace;'
     )
   }, [])

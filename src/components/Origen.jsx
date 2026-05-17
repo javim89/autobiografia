@@ -21,12 +21,7 @@ export default function Origen({ setMapHovering, mapHoverCount, sendMapCursor, r
             className="origen-body"
             dangerouslySetInnerHTML={{ __html: ORIGEN.description }}
           />
-          <p
-            className="origen-body"
-            style={{ marginTop: '1rem', fontSize: '0.8rem' }}
-          >
-            Easter egg: pasá el cursor sobre el mapa y pintá mi ciudad.
-          </p>
+
         </div>
         <Map
           setMapHovering={setMapHovering}

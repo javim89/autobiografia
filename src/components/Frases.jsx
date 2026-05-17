@@ -66,7 +66,6 @@ function FraseItem({ frase, isLast, forceReveal }) {
           </span>
         )}
         {frase.easter ? <EasterFrase hidden={hovered} /> : <p className="frase-text">"{frase.text}"</p>}
-        <p className="frase-author">— {frase.author}</p>
       </div>
 
       {modalOpen && (
@@ -84,7 +83,7 @@ export default function Frases({ konamiRevealed }) {
     <div className="section-wrapper">
       <div className="section">
         <p className="section-label">Filosofía</p>
-        <h2 className="section-title">Frases que<br /><span>me definen</span></h2>
+        <h2 className="section-title">Formas de<br /><span>pensar</span></h2>
         <div className="frases-list">
           {FRASES.map((f, i) => (
             <FraseItem
